@@ -1,0 +1,129 @@
+﻿@model IEnumerable<LOGIN.Models.Producto>
+@{
+    ViewData["Title"] = "Tienda";
+}
+
+<div class="max-w-7xl mx-auto px-4 py-10 antialiased">
+
+    <!-- CABECERA: Título y Acceso al Carrito Estilo Shadcn -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 pb-6 border-b border-zinc-200">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-zinc-900">Nuestros Productos</h1>
+            <p class="text-sm text-zinc-500 mt-1">Diseño contemporáneo y curado para tu espacio diario.</p>
+        </div>
+
+        <!-- Botón del Carrito con Badge Integrado Minimalista -->
+        <a asp-action="Carrito" class="relative inline-flex items-center gap-2 px-4 h-10 text-sm font-medium text-zinc-900 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 hover:text-zinc-900 transition-all shadow-sm active:scale-[0.98]">
+            <i data-lucide="shopping-cart" class="w-4 h-4 stroke-[1.5]"></i>
+            <span>Carrito</span>
+            @if (ViewBag.CarritoCount > 0)
+            {
+                <span class="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-zinc-950 text-[10px] font-semibold text-white tracking-tight ring-2 ring-white ml-1">
+                    @ViewBag.CarritoCount
+                </span>
+            }
+        </a>
+    </div>
+
+    <!-- REJILLA DE PRODUCTOS (Grid System) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach (var producto in Model)
+        {
+            <!-- Tarjeta de Producto Individual (Shadcn Card Component) -->
+            <div class="group bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden flex flex-col h-full transition-all duration-200 hover:shadow-md hover:border-zinc-300">
+
+                <!-- Área Visual Superior (Placeholder/Contenedor de Imagen) -->
+                <div class="relative aspect-square bg-zinc-50/50 flex items-center justify-center p-8 border-b border-zinc-100 overflow-hidden">
+
+                    <!-- Icono representativo con micro-animación al hacer hover -->
+                    <i data-lucide="package" class="w-14 h-14 text-zinc-400 stroke-[1.25] group-hover:scale-105 group-hover:text-zinc-600 transition-all duration-300"></i>
+
+                    <!-- Insignia (Badge) Flotante de Stock Bajo / Agotado -->
+                    @if (producto.Cantidad > 0 && producto.Cantidad <= 5)
+                    {
+                        <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-medium tracking-tight bg-amber-50 text-amber-700 border border-amber-200 rounded">
+                            Últimas @producto.Cantidad unidades
+                        </span>
+                    }
+                    else if (producto.Cantidad <= 0)
+                    {
+                        <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-medium tracking-tight bg-zinc-100 text-zinc-500 border border-zinc-200 rounded">
+                            Agotado
+                        </span>
+                    }
+                </div>
+
+                <!-- Detalles del Producto (Card Content & Footer) -->
+                <div class="p-5 flex-1 flex flex-col justify-between bg-white">
+                    <div class="space-y-1.5">
+                        <h3 class="font-semibold text-zinc-900 text-base tracking-tight leading-tight group-hover:text-zinc-800 transition-colors">
+                            @producto.Nombre
+                        </h3>
+                        <p class="text-xs text-zinc-500 line-clamp-2 leading-relaxed">
+                            @(producto.Descripcion ?? "Este artículo premium no cuenta con una descripción asignada de forma detallada.")
+                        </p>
+                    </div>
+
+                    <!-- Barra de Compra Inferior -->
+                    <div class="flex items-center justify-between pt-5 mt-4 border-t border-zinc-50">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-zinc-400 font-normal">Precio</span>
+                            <span class="text-lg font-bold text-zinc-900 tracking-tight">
+                                @producto.Precio.ToString("C")
+                            </span>
+                        </div>
+
+                        <!-- Botón de Acción Condicional -->
+                        @if (producto.Cantidad > 0)
+                        {
+                            <button class="add-to-cart inline-flex items-center justify-center h-8 px-3.5 text-xs font-medium bg-zinc-950 text-white rounded-md hover:bg-zinc-800 transition-all shadow shadow-zinc-950/10 active:scale-[0.97]" data-id="@producto.Id">
+                                Agregar
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="inline-flex items-center justify-center h-8 px-3.5 text-xs font-medium bg-zinc-50 text-zinc-400 border border-zinc-200 rounded-md cursor-not-allowed" disabled>
+                                Sin Stock
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Lógica JavaScript e interactividad asíncrona -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    // Inicializar los iconos vectoriales de Lucide
+    if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+    }
+
+    // Manejador del evento del Carrito con AJAX
+    $('.add-to-cart').click(function() {
+    var btn = $(this);
+    var productoId = btn.data('id');
+
+    // Deshabilitar momentáneamente para evitar doble clic accidental
+    btn.prop('disabled', true).addClass('opacity-70');
+
+    $.post('/Tienda/AgregarAlCarrito', { productoId: productoId, cantidad: 1 })
+    .done(function(response) {
+    if (response.success) {
+    // Recarga limpia de la vista para actualizar los badges globales de forma consistente
+    location.reload();
+    } else {
+    alert(response.message || "No se pudo añadir el producto.");
+    btn.prop('disabled', false).removeClass('opacity-70');
+    }
+    })
+    .fail(function() {
+    alert("Ocurrió un error de comunicación con el servidor.");
+    btn.prop('disabled', false).removeClass('opacity-70');
+    });
+    });
+    });
+</script>

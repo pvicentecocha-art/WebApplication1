@@ -1,0 +1,73 @@
+﻿@model LOGIN.Models.Producto
+
+@{
+    ViewData["Title"] = "Eliminar Producto";
+}
+
+<div class="max-w-md mx-auto px-4 py-16 antialiased">
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+
+        <div class="p-6 border-b border-zinc-100 bg-red-50/30 text-center">
+            <div class="inline-flex p-3 bg-red-50 border border-red-100 rounded-full text-red-600 mb-3">
+                <i data-lucide="alert-triangle" class="w-6 h-6 stroke-[1.5]"></i>
+            </div>
+            <h2 class="text-xl font-bold tracking-tight text-zinc-900">Confirmar eliminación</h2>
+            <p class="text-xs text-red-600 font-medium mt-1">Esta acción es irreversible y removerá el artículo de forma permanente.</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+
+            <p class="text-sm text-zinc-500 text-center leading-relaxed">
+                ¿Estás completamente seguro de que deseas eliminar este artículo de la base de datos de inventario?
+            </p>
+
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4 shadow-inner/5">
+                <dl class="space-y-3.5 text-xs">
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2">
+                        <dt class="font-semibold text-zinc-500">@Html.DisplayNameFor(model => model.Nombre)</dt>
+                        <dd class="col-span-2 font-medium text-zinc-900 text-right truncate">@Html.DisplayFor(model => model.Nombre)</dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2">
+                        <dt class="font-semibold text-zinc-500">@Html.DisplayNameFor(model => model.Descripcion)</dt>
+                        <dd class="col-span-2 text-zinc-600 text-right line-clamp-2">
+                            @(string.IsNullOrEmpty(Model.Descripcion) ? "Sin descripción" : Model.Descripcion)
+                        </dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2">
+                        <dt class="font-semibold text-zinc-500">Stock actual</dt>
+                        <dd class="col-span-2 font-medium text-zinc-900 text-right">@Html.DisplayFor(model => model.Cantidad) uds</dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 items-baseline">
+                        <dt class="font-semibold text-zinc-500">Valor unitario</dt>
+                        <dd class="col-span-2 font-bold text-zinc-950 text-right text-sm tracking-tight">
+                            @Html.DisplayFor(model => model.Precio)
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+
+            <form asp-action="Delete" class="pt-2">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="grid grid-cols-2 gap-3">
+                    <a asp-action="Index" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 h-10 px-4 active:scale-[0.99]">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all bg-red-600 text-white hover:bg-red-700 h-10 px-4 shadow-sm shadow-red-600/10 active:scale-[0.99] tracking-tight">
+                        <i data-lucide="trash-2" class="w-4 h-4 stroke-[1.5]"></i>
+                        Sí, eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>

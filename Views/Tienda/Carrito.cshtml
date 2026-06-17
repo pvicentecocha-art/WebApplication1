@@ -1,0 +1,175 @@
+﻿@model List<LOGIN.Models.CarritoItem>
+@{
+    ViewData["Title"] = "Mi Carrito";
+}
+
+<div class="max-w-6xl mx-auto px-4 py-10 antialiased">
+
+    <div class="mb-8 border-b border-zinc-200 pb-5">
+        <h1 class="text-3xl font-bold tracking-tight text-zinc-900 flex items-center gap-2.5">
+            <i data-lucide="shopping-bag" class="w-8 h-8 stroke-[1.5] text-zinc-950"></i>
+            Mi Carrito
+        </h1>
+        <p class="text-sm text-zinc-500 mt-1">Revisa tus artículos seleccionados, ajusta las cantidades o procede al pago seguro.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="flex flex-col items-center justify-center border border-dashed border-zinc-200 rounded-xl p-16 text-center bg-white shadow-sm max-w-2xl mx-auto mt-4">
+            <div class="p-4 bg-zinc-50 rounded-full text-zinc-400 mb-4 border border-zinc-100">
+                <i data-lucide="shopping-cart" class="w-12 h-12 stroke-[1]"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-zinc-900 tracking-tight">Tu carrito está completamente vacío</h3>
+            <p class="text-sm text-zinc-500 max-w-xs mt-1 mb-6">Parece que aún no has añadido artículos a tu selección actual.</p>
+            <a asp-action="Index" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-5 shadow shadow-zinc-950/10 active:scale-[0.98]">
+                Explorar la Tienda
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-zinc-200 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider bg-zinc-50/70">
+                                    <th class="py-3.5 px-4">Producto</th>
+                                    <th class="py-3.5 px-2 text-center">Cantidad</th>
+                                    <th class="py-3.5 px-4 text-right">Precio</th>
+                                    <th class="py-3.5 px-4 text-right">Subtotal</th>
+                                    <th class="py-3.5 px-4 text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-100 text-sm text-zinc-900">
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="hover:bg-zinc-50/40 transition-colors">
+                                        <td class="py-5 px-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-zinc-900 text-[14px] tracking-tight">@item.Producto?.Nombre</span>
+                                                <span class="inline-flex items-center gap-1 text-xs text-zinc-400 mt-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full @((item.Producto?.Cantidad > 0) ? "bg-emerald-500" : "bg-red-500")"></span>
+                                                    Stock disponible: @item.Producto?.Cantidad
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td class="py-5 px-2">
+                                            <div class="flex items-center justify-center border border-zinc-200 rounded-md bg-white h-8 max-w-[110px] mx-auto overflow-hidden shadow-sm">
+                                                <button class="btn-minus w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 text-xs font-medium transition-colors border-r border-zinc-100" data-id="@item.Id">
+                                                    <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                                <input type="number" class="w-10 h-full text-center border-0 text-xs bg-zinc-50/50 font-semibold text-zinc-900 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" data-id="@item.Id" value="@item.Cantidad" readonly />
+                                                <button class="btn-plus w-8 h-full flex items-center justify-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 text-xs font-medium transition-colors border-l border-zinc-100" data-id="@item.Id">
+                                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+
+                                        <td class="py-5 px-4 text-right text-zinc-500 font-normal">
+                                            @item.Producto?.Precio.ToString("C")
+                                        </td>
+
+                                        <td class="py-5 px-4 text-right font-semibold text-zinc-900 tracking-tight">
+                                            @((item.Cantidad * (item.Producto?.Precio ?? 0)).ToString("C"))
+                                        </td>
+
+                                        <td class="py-5 px-4 text-center">
+                                            <button class="btn-remove text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-md p-1.5 transition-all" data-id="@item.Id" title="Eliminar del carrito">
+                                                <i data-lucide="trash-2" class="w-4 h-4 stroke-[1.75]"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 lg:sticky lg:top-20">
+                <div class="bg-white rounded-xl border border-zinc-200 shadow-sm p-6">
+                    <h3 class="text-base font-semibold text-zinc-900 tracking-tight mb-4">Resumen de Orden</h3>
+
+                    <div class="space-y-3.5 text-sm border-b border-zinc-100 pb-4.5">
+                        <div class="flex justify-between items-center text-zinc-500">
+                            <span>Subtotal artículos</span>
+                            <span class="text-zinc-900 font-medium">@ViewBag.Total.ToString("C")</span>
+                        </div>
+                        <div class="flex justify-between items-center text-zinc-500">
+                            <span>Envío</span>
+                            <span class="text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded text-xs border border-emerald-100">Gratis</span>
+                        </div>
+                        <div class="flex justify-between items-center text-zinc-500">
+                            <span>Impuesto al valor (IVA)</span>
+                            <span class="text-zinc-400 text-xs italic">Incluido</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-baseline mt-4 mb-6">
+                        <span class="text-sm font-medium text-zinc-900">Total estimado:</span>
+                        <span class="text-2xl font-bold text-zinc-900 tracking-tight">
+                            @ViewBag.Total.ToString("C")
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-2.5 w-full">
+                        <a asp-action="Checkout" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-4 shadow shadow-zinc-950/10 font-medium tracking-tight active:scale-[0.99]">
+                            Proceder al Checkout
+                        </a>
+                        <a asp-action="Index" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 h-10 px-4 active:scale-[0.99]">
+                            Seguir Comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    // Inicializa los iconos vectoriales estilizados de Lucide en la tabla
+    if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+    }
+
+    function actualizarItem(itemId, nuevaCantidad) {
+    $.post('/Tienda/ActualizarCantidad', { itemId: itemId, cantidad: nuevaCantidad })
+    .done(function(response) {
+    if (response.success) {
+    location.reload(); // Recarga limpia para actualizar importes
+    } else if (response.message) {
+    alert(response.message);
+    }
+    });
+    }
+
+    $('.btn-plus').click(function() {
+    var itemId = $(this).data('id');
+    var input = $(this).siblings('input');
+    actualizarItem(itemId, parseInt(input.val()) + 1);
+    });
+
+    $('.btn-minus').click(function() {
+    var itemId = $(this).data('id');
+    var input = $(this).siblings('input');
+    var valorActual = parseInt(input.val());
+    if (valorActual > 1) {
+    actualizarItem(itemId, valorActual - 1);
+    }
+    });
+
+    $('.btn-remove').click(function() {
+    var itemId = $(this).data('id');
+    if (confirm('¿Estás seguro de que deseas eliminar este producto de tu orden?')) {
+    actualizarItem(itemId, 0);
+    }
+    });
+    });
+</script>

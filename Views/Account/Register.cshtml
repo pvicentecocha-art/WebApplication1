@@ -1,0 +1,160 @@
+﻿@model Usuario
+
+@{
+    ViewData["Title"] = "Registro";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MiInventario</title>
+
+    <!-- Tailwind CSS para el motor de estilos Shadcn UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+        theme: {
+        extend: {
+        fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        }
+        }
+        }
+        }
+    </script>
+
+    <!-- Tipografía Inter & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Componente estándar de Input estilo Shadcn UI */
+        .shadcn-input {
+        width: 100%;
+        height: 2.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e4e4e7; /* zinc-200 */
+        background-color: #ffffff;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        }
+
+        .shadcn-input:focus {
+        outline: none;
+        border-color: #09090b; /* zinc-950 */
+        box-shadow: 0 0 0 1px #09090b;
+        }
+
+        .shadcn-input::placeholder {
+        color: #a1a1aa; /* zinc-400 */
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-zinc-50 flex items-center justify-center p-4 antialiased selection:bg-zinc-950 selection:text-white">
+
+    <!-- Tarjeta Principal (Shadcn Card Component) -->
+    <div class="bg-white border border-zinc-200 rounded-xl shadow-sm max-w-lg w-full overflow-hidden transition-all duration-300">
+
+        <!-- Encabezado (Card Header) -->
+        <div class="p-6 md:p-8 text-center border-b border-zinc-100 bg-zinc-50/50">
+            <div class="inline-flex p-3 bg-white border border-zinc-200 rounded-xl text-zinc-950 mb-3 shadow-sm">
+                <i data-lucide="user-plus" class="w-6 h-6 stroke-[1.5]"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Crear Cuenta</h2>
+            <p class="text-xs text-zinc-500 mt-1">Completa tus datos personales para darte de alta en la plataforma.</p>
+        </div>
+
+        <!-- Cuerpo del Formulario (Card Content) -->
+        <div class="p-6 md:p-8">
+            <form asp-action="Register" method="post" class="space-y-4">
+
+                <!-- Resumen de Validación Estilo Alerta Destructive de Shadcn -->
+                <div asp-validation-summary="ModelOnly" class="text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg empty:hidden p-3 space-y-1"></div>
+
+                <!-- Campo: Nombre Completo -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold tracking-tight text-zinc-800 flex items-center gap-1.5">
+                        <i data-lucide="user" class="w-3.5 h-3.5 text-zinc-400 stroke-[1.5]"></i>
+                        Nombre Completo
+                    </label>
+                    <input asp-for="Nombre" class="shadcn-input text-zinc-900" placeholder="Ej. Juan Pérez" required />
+                    <span asp-validation-for="Nombre" class="text-xs font-medium text-red-600 block mt-1"></span>
+                </div>
+
+                <!-- Campo: Correo Electrónico -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold tracking-tight text-zinc-800 flex items-center gap-1.5">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 text-zinc-400 stroke-[1.5]"></i>
+                        Correo Electrónico
+                    </label>
+                    <input asp-for="Email" type="email" class="shadcn-input text-zinc-900" placeholder="nombre@empresa.com" required />
+                    <span asp-validation-for="Email" class="text-xs font-medium text-red-600 block mt-1"></span>
+                </div>
+
+                <!-- Campo: Contraseña -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold tracking-tight text-zinc-800 flex items-center gap-1.5">
+                        <i data-lucide="lock" class="w-3.5 h-3.5 text-zinc-400 stroke-[1.5]"></i>
+                        Contraseña
+                    </label>
+                    <input asp-for="Password" type="password" class="shadcn-input text-zinc-900" placeholder="••••••••" required />
+                    <span asp-validation-for="Password" class="text-xs font-medium text-red-600 block mt-1"></span>
+                </div>
+
+                <!-- Fila Rejilla de Dos Columnas: Edad y Ciudad -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Campo: Edad -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold tracking-tight text-zinc-800 flex items-center gap-1.5">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-zinc-400 stroke-[1.5]"></i>
+                            Edad
+                        </label>
+                        <input asp-for="Edad" type="number" min="0" class="shadcn-input text-zinc-900" placeholder="18" />
+                        <span asp-validation-for="Edad" class="text-xs font-medium text-red-600 block mt-1"></span>
+                    </div>
+
+                    <!-- Campo: Ciudad -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold tracking-tight text-zinc-800 flex items-center gap-1.5">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400 stroke-[1.5]"></i>
+                            Ciudad
+                        </label>
+                        <input asp-for="Ciudad" class="shadcn-input text-zinc-900" placeholder="Tu ciudad" />
+                        <span asp-validation-for="Ciudad" class="text-xs font-medium text-red-600 block mt-1"></span>
+                    </div>
+                </div>
+
+                <!-- Botón de Envío Metálico Plano -->
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-4 shadow shadow-zinc-950/10 active:scale-[0.99] tracking-tight pt-0.5 mt-2">
+                    <i data-lucide="user-plus" class="w-4 h-4 stroke-[1.5]"></i>
+                    Registrarse
+                </button>
+            </form>
+
+            <!-- Enlace de Retorno al Login -->
+            <div class="text-center pt-4 mt-6 border-t border-zinc-100">
+                <a asp-action="Login" class="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-950 transition-colors">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5 stroke-[1.5]"></i>
+                    ¿Ya tienes cuenta? Inicia sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de validación en tiempo real de ASP.NET Core -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- Inicializador de Iconos Lucide -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

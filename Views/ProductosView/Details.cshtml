@@ -1,0 +1,95 @@
+﻿@model LOGIN.Models.Producto
+
+@{
+    ViewData["Title"] = "Detalles";
+}
+
+<div class="max-w-md mx-auto px-4 py-12 antialiased">
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+
+        <div class="p-6 border-b border-zinc-100 bg-zinc-50/50 text-center">
+            <div class="inline-flex p-3 bg-zinc-100 border border-zinc-200 rounded-full text-zinc-950 mb-3">
+                <i data-lucide="info" class="w-6 h-6 stroke-[1.5]"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Detalles del Producto</h2>
+            <p class="text-xs text-zinc-500 mt-1">Ficha técnica e información de inventario registrada en el sistema.</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4 shadow-inner/5">
+                <dl class="space-y-3.5 text-xs">
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2 items-center">
+                        <dt class="font-semibold text-zinc-500">ID Registro</dt>
+                        <dd class="col-span-2 font-mono text-zinc-600 text-right bg-white border border-zinc-200 rounded px-1.5 py-0.5 w-max ml-auto">
+                            #@Html.DisplayFor(model => model.Id)
+                        </dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2">
+                        <dt class="font-semibold text-zinc-500">@Html.DisplayNameFor(model => model.Nombre)</dt>
+                        <dd class="col-span-2 font-semibold text-zinc-900 text-right tracking-tight">@Html.DisplayFor(model => model.Nombre)</dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2">
+                        <dt class="font-semibold text-zinc-500">@Html.DisplayNameFor(model => model.Descripcion)</dt>
+                        <dd class="col-span-2 text-zinc-600 text-right leading-relaxed">
+                            @(string.IsNullOrEmpty(Model.Descripcion) ? "Sin descripción asignada" : Model.Descripcion)
+                        </dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2 items-center">
+                        <dt class="font-semibold text-zinc-500">Disponibilidad</dt>
+                        <dd class="col-span-2 text-right">
+                            @if (Model.Cantidad == 0)
+                            {
+                                <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200 rounded">
+                                    Sin stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="font-medium text-zinc-900">
+                                    @Html.DisplayFor(model => model.Cantidad) unidades
+                                </span>
+                            }
+                        </dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 border-b border-zinc-200/50 pb-2 items-baseline">
+                        <dt class="font-semibold text-zinc-500">Precio Unitario</dt>
+                        <dd class="col-span-2 font-bold text-zinc-950 text-right text-sm tracking-tight">
+                            @Html.DisplayFor(model => model.Precio)
+                        </dd>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-0.5 items-center">
+                        <dt class="font-semibold text-zinc-500">Fecha Alta</dt>
+                        <dd class="col-span-2 text-zinc-500 text-right font-medium">@Html.DisplayFor(model => model.FechaRegistro)</dd>
+                    </div>
+
+                </dl>
+            </div>
+
+            <div class="border-t border-zinc-100 my-2 pt-2"></div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <a asp-action="Index" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 h-10 px-4 active:scale-[0.99]">
+                    <i data-lucide="arrow-left" class="w-4 h-4 stroke-[1.5]"></i>
+                    Volver
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-4 shadow shadow-zinc-950/10 active:scale-[0.99] tracking-tight">
+                    <i data-lucide="edit-3" class="w-4 h-4 stroke-[1.5]"></i>
+                    Editar datos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>

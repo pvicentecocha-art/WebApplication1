@@ -1,0 +1,361 @@
+﻿@model LOGIN.Models.ReporteVentasViewModel
+@{
+    ViewData["Title"] = "Reporte de Ventas";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<div class="shadcn-wrapper container mt-5">
+
+    <div class="d-flex justify-content-between align-items-start mb-5 flex-wrap gap-4 border-bottom pb-4">
+        <div>
+            <h1 class="shadcn-title">Dashboard</h1>
+            <p class="shadcn-subtitle">Monitoreo de ingresos y rendimiento del e-commerce en tiempo real.</p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <form asp-action="Ventas" method="get" class="shadcn-form-card d-flex align-items-center gap-2 pa-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="shadcn-label">Desde:</span>
+                    <input type="date" name="fechaInicio" class="shadcn-input" value="@Model.FechaInicio.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="d-flex align-items-center gap-2 ms-2">
+                    <span class="shadcn-label">Hasta:</span>
+                    <input type="date" name="fechaFin" class="shadcn-input" value="@Model.FechaFin.ToString("yyyy-MM-dd")" />
+                </div>
+                <button type="submit" class="shadcn-btn shadcn-btn-secondary ms-2">
+                    <i class="bi bi-filter"></i> Filtrar
+                </button>
+            </form>
+
+            <a asp-controller="Reportes" asp-action="DescargarPdf" class="shadcn-btn shadcn-btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="shadcn-card">
+                <div class="shadcn-card-header">
+                    <span class="shadcn-card-label">Total Ingresos</span>
+                    <i class="bi bi-currency-dollar shadcn-card-icon"></i>
+                </div>
+                <div class="shadcn-card-value">@Model.TotalIngresos.ToString("C")</div>
+                <p class="shadcn-card-sub">Recaudación acumulada en el rango</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="shadcn-card">
+                <div class="shadcn-card-header">
+                    <span class="shadcn-card-label">Órdenes Totales</span>
+                    <i class="bi bi-credit-card shadcn-card-icon"></i>
+                </div>
+                <div class="shadcn-card-value">+@Model.TotalPedidos</div>
+                <p class="shadcn-card-sub">Transacciones aprobadas con éxito</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="shadcn-card">
+                <div class="shadcn-card-header">
+                    <span class="shadcn-card-label">Items Vendidos</span>
+                    <i class="bi bi-package shadcn-card-icon"></i>
+                </div>
+                <div class="shadcn-card-value">@Model.ProductosVendidos</div>
+                <p class="shadcn-card-sub">Productos físicos despachados</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-5">
+            <div class="shadcn-card p-4 h-100">
+                <div class="mb-3">
+                    <h3 class="shadcn-section-title">Más Vendidos</h3>
+                    <p class="shadcn-card-sub">Top 5 productos con mayor demanda.</p>
+                </div>
+
+                @if (!Model.TopProductos.Any())
+                {
+                    <p class="text-muted small py-4 text-center">No hay datos en este rango.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table shadcn-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end">Recaudado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var prod in Model.TopProductos)
+                                {
+                                    <tr>
+                                        <td class="fw-medium text-dark">@prod.ProductoNombre</td>
+                                        <td class="text-center"><span class="shadcn-badge-zinc">@prod.CantidadVendida u.</span></td>
+                                        <td class="text-end fw-semibold text-dark">@prod.TotalRecaudado.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="shadcn-card p-4 h-100">
+                <div class="mb-3">
+                    <h3 class="shadcn-section-title">Órdenes Recientes</h3>
+                    <p class="shadcn-card-sub">Historial detallado de transacciones del periodo.</p>
+                </div>
+
+                @if (!Model.PedidosRecientes.Any())
+                {
+                    <p class="text-muted small py-4 text-center">No se encontraron transacciones.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table shadcn-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pedido in Model.PedidosRecientes)
+                                {
+                                    <tr>
+                                        <td class="fw-medium text-muted">#@pedido.Id</td>
+                                        <td class="text-secondary">@pedido.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <span class="shadcn-badge @(pedido.Estado.ToString() switch
+                                                  {
+                                                      "Confirmado" => "shadcn-badge-success",
+                                                      "Entregado" => "shadcn-badge-primary",
+                                                      "Cancelado" => "shadcn-badge-danger",
+                                                      _ => "shadcn-badge-secondary"
+                                                  })">@pedido.Estado</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-dark">@pedido.Total.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .shadcn-wrapper {
+        font-family: 'Inter', -apple-system, sans-serif;
+        color: #09090b;
+    }
+
+    /* Títulos */
+    .shadcn-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.05em;
+        color: #09090b;
+        margin-bottom: 0.125rem;
+    }
+
+    .shadcn-subtitle {
+        font-size: 0.875rem;
+        color: #71717a;
+    }
+
+    .shadcn-section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #09090b;
+        margin-bottom: 0.125rem;
+    }
+
+    /* Tarjetas base estilo Shadcn */
+    .shadcn-card {
+        background-color: #ffffff;
+        border: 1px solid #e4e4e7;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+    }
+
+    .shadcn-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .shadcn-card-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #09090b;
+    }
+
+    .shadcn-card-icon {
+        font-size: 1rem;
+        color: #71717a;
+    }
+
+    .shadcn-card-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: #09090b;
+    }
+
+    .shadcn-card-sub {
+        font-size: 0.75rem;
+        color: #71717a;
+        margin-top: 0.25rem;
+        margin-bottom: 0;
+    }
+
+    /* Filtros e Inputs */
+    .shadcn-form-card {
+        background-color: #ffffff;
+        border: 1px solid #e4e4e7;
+        border-radius: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .shadcn-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #71717a;
+    }
+
+    .shadcn-input {
+        border: 1px solid #e4e4e7;
+        border-radius: 0.375rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.813rem;
+        color: #09090b;
+        outline: none;
+        background-color: transparent;
+        transition: border-color 0.2s;
+    }
+
+        .shadcn-input:focus {
+            border-color: #a1a1aa;
+        }
+
+    /* Botones Shadcn */
+    .shadcn-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        transition: background-color 0.2s, opacity 0.2s;
+        cursor: pointer;
+        height: 36px;
+    }
+
+    .shadcn-btn-primary {
+        background-color: #18181b;
+        color: #ffffff;
+        border: 1px solid #18181b;
+    }
+
+        .shadcn-btn-primary:hover {
+            background-color: #27272a;
+            color: #ffffff;
+        }
+
+    .shadcn-btn-secondary {
+        background-color: #ffffff;
+        color: #18181b;
+        border: 1px solid #e4e4e7;
+    }
+
+        .shadcn-btn-secondary:hover {
+            background-color: #f4f4f5;
+            color: #18181b;
+        }
+
+    /* Tablas Limpias */
+    .shadcn-table {
+        margin-bottom: 0;
+        font-size: 0.875rem;
+        border-color: #e4e4e7;
+    }
+
+        .shadcn-table thead tr th {
+            color: #71717a;
+            font-weight: 500;
+            border-bottom: 1px solid #e4e4e7;
+            background-color: #fafafa;
+            padding: 0.75rem;
+        }
+
+        .shadcn-table tbody tr td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e4e4e7;
+        }
+
+        .shadcn-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Badges/Etiquetas de Estado */
+    .shadcn-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 9999px;
+        padding: 0.125rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1rem;
+    }
+
+    .shadcn-badge-zinc {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 0.25rem;
+        padding: 0.125rem 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background-color: #f4f4f5;
+        color: #18181b;
+    }
+
+    .shadcn-badge-primary {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .shadcn-badge-success {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+
+    .shadcn-badge-danger {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .shadcn-badge-secondary {
+        background-color: #f4f4f5;
+        color: #71717a;
+    }
+</style>

@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Política de Privacidad";
+}
+
+<div class="max-w-xl mx-auto px-4 py-16 antialiased">
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+
+        <div class="p-6 border-b border-zinc-100 bg-zinc-50/50 text-center">
+            <div class="inline-flex p-3 bg-zinc-100 border border-zinc-200 rounded-full text-zinc-950 mb-3">
+                <i data-lucide="shield-check" class="w-6 h-6 stroke-[1.5]"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Política de Privacidad</h2>
+            <p class="text-xs text-zinc-500 mt-1">Información sobre el tratamiento, seguridad y protección de tus datos personales.</p>
+        </div>
+
+        <div class="p-6 space-y-4">
+
+            <div class="flex items-start gap-3 p-3.5 bg-zinc-50 border border-zinc-200/60 rounded-lg text-xs leading-relaxed text-zinc-600">
+                <i data-lucide="lock" class="w-4 h-4 text-zinc-400 stroke-[1.5] mt-0.5 shrink-0"></i>
+                <p>
+                    <strong class="text-zinc-900 font-semibold">Protección garantizada:</strong>
+                    Esta plataforma implementa protocolos criptográficos avanzados para resguardar tu identidad. No compartimos tu información con terceros bajo ningún concepto comercial.
+                </p>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 bg-zinc-50 border border-zinc-200/60 rounded-lg text-xs leading-relaxed text-zinc-600">
+                <i data-lucide="server" class="w-4 h-4 text-zinc-400 stroke-[1.5] mt-0.5 shrink-0"></i>
+                <p>
+                    <strong class="text-zinc-900 font-semibold">Almacenamiento seguro:</strong>
+                    Toda la información transaccional y de registro se procesa de forma cifrada en bases de datos aisladas, asegurando el cumplimiento estricto de las normativas de privacidad vigentes.
+                </p>
+            </div>
+
+            <div class="border-t border-zinc-100 pt-4 mt-2 flex justify-end">
+                <a asp-controller="Home" asp-action="Index" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 h-10 px-5 active:scale-[0.99]">
+                    <i data-lucide="arrow-left" class="w-4 h-4 stroke-[1.5]"></i>
+                    Volver al inicio
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>

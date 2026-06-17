@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="max-w-xl mx-auto px-4 py-12 antialiased">
+    <!-- Contenedor Principal Estilo Shadcn Card -->
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+
+        <!-- Encabezado de la Tarjeta (Card Header) -->
+        <div class="p-6 border-b border-zinc-100 bg-zinc-50/50">
+            <h2 class="text-2xl font-semibold tracking-tight text-zinc-900 flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-6 h-6 stroke-[1.5] text-zinc-950"></i>
+                Finalizar pedido
+            </h2>
+            <p class="text-xs text-zinc-500 mt-1">Completa los detalles de entrega y el método de facturación para procesar tu orden.</p>
+        </div>
+
+        <!-- Cuerpo del Formulario (Card Content) -->
+        <form asp-action="ConfirmarPedido" method="post" class="p-6 space-y-6">
+
+            <!-- Campo: Dirección de Envío -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium tracking-tight text-zinc-800 flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    Dirección de envío
+                </label>
+                <input type="text"
+                       name="direccion"
+                       class="shadcn-input shadow-sm placeholder-zinc-400 text-zinc-900"
+                       placeholder="Calle, avenida, ciudad y código postal"
+                       required />
+            </div>
+
+            <!-- Campo: Método de Pago -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium tracking-tight text-zinc-800 flex items-center gap-1.5">
+                    <i data-lucide="wallet" class="w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    Método de pago
+                </label>
+                <div class="relative">
+                    <select name="metodoPago"
+                            class="shadcn-input shadow-sm text-zinc-900 appearance-none pr-10 bg-white"
+                            required>
+                        <option value="" disabled selected>Selecciona una opción de pago</option>
+                        <option value="Tarjeta Crédito/Débito">Tarjeta de Crédito o Débito</option>
+                        <option value="Transferencia Bancaria">Transferencia Bancaria Electrónica</option>
+                        <option value="Pago contra entrega">Pago en efectivo contra entrega</option>
+                    </select>
+                    <!-- Icono indicador de despliegue personalizado estilo Shadcn -->
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400">
+                        <i data-lucide="chevron-down" class="w-4 h-4 stroke-[1.5]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caja de Resumen Total Destacada -->
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4 flex justify-between items-center shadow-inner/5">
+                <div class="flex items-center gap-2 text-zinc-600">
+                    <i data-lucide="receipt" class="w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    <span class="text-sm font-medium">Monto total a pagar:</span>
+                </div>
+                <span class="text-xl font-bold text-zinc-950 tracking-tight">@ViewBag.Total.ToString("C")</span>
+            </div>
+
+            <!-- Acciones / Botones Inferiores -->
+            <div class="flex items-center justify-end gap-3 pt-2 border-t border-zinc-100">
+                <a asp-action="Carrito" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 h-10 px-4 active:scale-[0.99]">
+                    Volver al carrito
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-5 shadow shadow-zinc-950/10 active:scale-[0.99] tracking-tight">
+                    Confirmar Compra
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Inicializador local de iconos Lucide -->
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>
