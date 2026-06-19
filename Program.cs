@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using LOGIN.Data;
-//using MudBlazor.Services; // Agrega este using arriba
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +9,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Agregar controladores MVC (vistas) y API controllers
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllers(); // ← NUEVO para la API
+builder.Services.AddControllers();
 
-// Base de datos
+// 🔥 CAMBIO IMPORTANTE: Base de datos con PostgreSQL/Supabase
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        // Configuración para mejorar la estabilidad en la nube
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorCodesToAdd: null);
+
+        // Configurar para usar el pooler de conexiones de Supabase
+     //   npgsqlOptions.MaxPoolSize(100);
+      //  npgsqlOptions.MinPoolSize(1);
+    });
+});
 
 // Caché y Sesiones
 builder.Services.AddDistributedMemoryCache();
@@ -25,18 +38,34 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Blazor y MudBlazor (¡Movido aquí arriba!)
-
-// builder.Services.AddMudServices(); // ← Registra MudBlazor AQUÍ, antes del Build.
-
 // ==========================================
 // CONSTRUCCIÓN DE LA APP
 // ==========================================
 var app = builder.Build();
+// Fuerza a .NET y Npgsql a aceptar comportamientos heredados de DateTime (Local como UTC)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // ==========================================
 // CONFIGURACIÓN DEL PIPELINE (Middleware)
 // ==========================================
+
+// 🔥 NUEVO: Aplicar migraciones automáticamente al iniciar
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        await dbContext.Database.MigrateAsync();
+        Console.WriteLine("✅ Migraciones aplicadas correctamente a Supabase/PostgreSQL");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+        Console.WriteLine($"Detalle: {ex.InnerException?.Message}");
+        // La aplicación continuará ejecutándose, pero las migraciones fallaron
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -59,6 +88,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
-app.MapControllers(); // ← NUEVO (para endpoints /api/...)
+app.MapControllers(); // Para endpoints /api/...
 
 app.Run();

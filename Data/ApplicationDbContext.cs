@@ -11,11 +11,10 @@ namespace LOGIN.Data
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Producto> Productos { get; set; } // ← NUEVO
+        public DbSet<Producto> Productos { get; set; }
         public DbSet<CarritoItem> CarritoItems { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<PedidoDetalle> PedidoDetalles { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,9 +39,16 @@ namespace LOGIN.Data
                 entity.Property(e => e.Nombre).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Descripcion).HasMaxLength(500);
                 entity.Property(e => e.Cantidad).IsRequired();
-                entity.Property(e => e.Precio).HasPrecision(18, 2);
-                entity.Property(e => e.FechaRegistro).HasDefaultValueSql("GETDATE()");
+
+                // 🔥 CAMBIO IMPORTANTE: Para PostgreSQL usamos HasColumnType en lugar de HasPrecision
+                entity.Property(e => e.Precio)
+                      .HasColumnType("decimal(18,2)"); // ← Nuevo formato para PostgreSQL
+
+                // 🔥 CAMBIO IMPORTANTE: GETDATE() no existe en PostgreSQL, usamos NOW()
+                entity.Property(e => e.FechaRegistro)
+                      .HasDefaultValueSql("NOW()"); // ← Cambiado de GETDATE() a NOW()
             });
+
             modelBuilder.Entity<CarritoItem>(entity =>
             {
                 entity.ToTable("CarritoItems");
