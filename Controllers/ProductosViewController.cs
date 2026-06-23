@@ -14,15 +14,42 @@ namespace LOGIN.Controllers
             _context = context;
         }
 
-        // GET: ProductosView
-        public async Task<IActionResult> Index()
+        // GET: ProductosView (CON BÚSQUEDA Y FILTROS)
+        public async Task<IActionResult> Index(string searchString, decimal? precioMin, decimal? precioMax)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UsuarioId")))
             {
                 return RedirectToAction("Login", "Account");
             }
-            var productos = await _context.Productos.ToListAsync();
-            return View(productos);
+
+            // Consulta base
+            var productos = from p in _context.Productos
+                            select p;
+
+            // 🔍 BÚSQUEDA POR NOMBRE (insensible a mayúsculas/minúsculas)
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                productos = productos.Where(p => p.Nombre.Contains(searchString));
+            }
+
+            // 💰 FILTRO POR PRECIO MÍNIMO
+            if (precioMin.HasValue)
+            {
+                productos = productos.Where(p => p.Precio >= precioMin.Value);
+            }
+
+            // 💰 FILTRO POR PRECIO MÁXIMO
+            if (precioMax.HasValue)
+            {
+                productos = productos.Where(p => p.Precio <= precioMax.Value);
+            }
+
+            // Enviar valores al ViewBag para mantener los filtros en la vista
+            ViewBag.SearchString = searchString;
+            ViewBag.PrecioMin = precioMin;
+            ViewBag.PrecioMax = precioMax;
+
+            return View(await productos.ToListAsync());
         }
 
         // GET: ProductosView/Details/5

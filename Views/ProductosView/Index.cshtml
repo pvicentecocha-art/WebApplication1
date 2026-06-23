@@ -21,7 +21,7 @@
     }
 
     <!-- CABECERA DE PANEL (Dashboard Header) -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-5 border-b border-zinc-200">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-5 border-b border-zinc-200">
         <div>
             <h1 class="text-3xl font-bold tracking-tight text-zinc-900 flex items-center gap-2.5">
                 <i data-lucide="package" class="w-8 h-8 stroke-[1.5] text-zinc-950"></i>
@@ -39,22 +39,123 @@
         </a>
     </div>
 
+    <!-- 🔍 BARRA DE BÚSQUEDA Y FILTROS (NUEVO) -->
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+        <form method="get" asp-action="Index" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <!-- Campo de búsqueda por nombre -->
+            <div class="md:col-span-1">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    <input type="text" name="searchString" class="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                           placeholder="Buscar por nombre..."
+                           value="@ViewBag.SearchString" />
+                </div>
+            </div>
+
+            <!-- Filtro precio mínimo -->
+            <div>
+                <div class="relative">
+                    <i data-lucide="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    <input type="number" name="precioMin" class="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                           placeholder="Precio mín." step="0.01" min="0"
+                           value="@ViewBag.PrecioMin" />
+                </div>
+            </div>
+
+            <!-- Filtro precio máximo -->
+            <div>
+                <div class="relative">
+                    <i data-lucide="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 stroke-[1.5]"></i>
+                    <input type="number" name="precioMax" class="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                           placeholder="Precio máx." step="0.01" min="0"
+                           value="@ViewBag.PrecioMax" />
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-10 px-4 shadow shadow-zinc-950/10 active:scale-[0.98]">
+                    <i data-lucide="search" class="w-4 h-4 stroke-[1.5]"></i>
+                    Buscar
+                </button>
+                <a asp-action="Index" class="inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-all border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 h-10 px-4 active:scale-[0.98]">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4 stroke-[1.5]"></i>
+                    Limpiar
+                </a>
+            </div>
+        </form>
+
+        <!-- Indicador de filtros activos -->
+        @if (!string.IsNullOrEmpty(ViewBag.SearchString) || ViewBag.PrecioMin != null || ViewBag.PrecioMax != null)
+        {
+            <div class="mt-3 flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
+                <span class="text-xs text-zinc-500 font-medium">Filtros activos:</span>
+                @if (!string.IsNullOrEmpty(ViewBag.SearchString))
+                {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-medium bg-zinc-100 text-zinc-700 rounded-full border border-zinc-200">
+                        🔍 @ViewBag.SearchString
+                    </span>
+                }
+                @if (ViewBag.PrecioMin != null)
+                {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-medium bg-zinc-100 text-zinc-700 rounded-full border border-zinc-200">
+                        💰 ≥ @ViewBag.PrecioMin?.ToString("C")
+                    </span>
+                }
+                @if (ViewBag.PrecioMax != null)
+                {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-medium bg-zinc-100 text-zinc-700 rounded-full border border-zinc-200">
+                        💰 ≤ @ViewBag.PrecioMax?.ToString("C")
+                    </span>
+                }
+            </div>
+        }
+    </div>
+
     <!-- CONTENEDOR PRINCIPAL DE TABLA -->
     <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
 
         @if (Model == null || !Model.Any())
         {
-            <!-- ESTADO VACÍO (Empty State) -->
+            <!-- ESTADO VACÍO (Empty State) con mensaje contextual -->
             <div class="flex flex-col items-center justify-center p-16 text-center">
                 <div class="p-4 bg-zinc-50 rounded-full text-zinc-400 mb-4 border border-zinc-100">
                     <i data-lucide="inbox" class="w-12 h-12 stroke-[1]"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-zinc-900 tracking-tight">No hay productos en almacén</h3>
-                <p class="text-sm text-zinc-500 max-w-xs mt-1 mb-6">El catálogo está limpio. Comienza registrando tu primer artículo comercial.</p>
-                <a asp-action="Create" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-9 px-4 shadow shadow-zinc-950/10">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                    Agregar Producto
-                </a>
+                <h3 class="text-lg font-semibold text-zinc-900 tracking-tight">
+                    @if (!string.IsNullOrEmpty(ViewBag.SearchString) || ViewBag.PrecioMin != null || ViewBag.PrecioMax != null)
+                    {
+                        <span>😕 No hay resultados</span>
+                    }
+                    else
+                    {
+                        <span>No hay productos en almacén</span>
+                    }
+                </h3>
+                <p class="text-sm text-zinc-500 max-w-xs mt-1 mb-6">
+                    @if (!string.IsNullOrEmpty(ViewBag.SearchString) || ViewBag.PrecioMin != null || ViewBag.PrecioMax != null)
+                    {
+                        <span>No se encontraron productos con esos filtros. Prueba con otros valores.</span>
+                    }
+                    else
+                    {
+                        <span>El catálogo está limpio. Comienza registrando tu primer artículo comercial.</span>
+                    }
+                </p>
+                @if (!string.IsNullOrEmpty(ViewBag.SearchString) || ViewBag.PrecioMin != null || ViewBag.PrecioMax != null)
+                {
+                    <a asp-action="Index" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-9 px-4 shadow shadow-zinc-950/10">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        Mostrar todos
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="Create" class="inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-all bg-zinc-950 text-white hover:bg-zinc-800 h-9 px-4 shadow shadow-zinc-950/10">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        Agregar Producto
+                    </a>
+                }
             </div>
         }
         else
