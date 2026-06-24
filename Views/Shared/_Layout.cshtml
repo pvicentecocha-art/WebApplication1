@@ -13,6 +13,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    /* PWA */
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0d6efd" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TiendaNet" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+
     <style>
         body {
         font-family: 'Inter', sans-serif;
@@ -37,6 +47,16 @@
         }
     </style>
 </head>
+<script>
+    if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+    .then(reg => console.log('SW registrado:', reg.scope))
+    .catch(err => console.error('SW error:', err));
+    });
+    }
+</script>
+
 <body class="min-h-screen flex flex-col bg-zinc-50/50 text-zinc-950 antialiased">
 
     <header class="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md">

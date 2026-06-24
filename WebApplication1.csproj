@@ -28,4 +28,8 @@
 		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\icons\" />
+	</ItemGroup>
+
 </Project>
